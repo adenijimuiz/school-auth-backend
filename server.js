@@ -2,11 +2,13 @@ const express = require('express');
 const connectDB = require('./utils/connectDB');
 const adminRouter = require('./routes/adminsRouters');
 const { errorHandler } = require('./middlewares/errorHandler');
+const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 5000;
 

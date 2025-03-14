@@ -52,7 +52,7 @@ const adminlogin = asyncHandler(async (req, res) => {
     const user = await User.findOne({email, role: 'admin'});
     if (!user) {
         res.status(404);
-        throw new Error('Admin not found');
+        throw new Error('Invalid credentials');
     }
     
     // Check password
@@ -63,7 +63,7 @@ const adminlogin = asyncHandler(async (req, res) => {
     }
 
 
-    const token = jwt.sign({id: user?._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+    const token = jwt.sign({id: user?._id, role: user?.role }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
     res.cookie('token', token, {
         httpOnly: true, //prevent clients side javascript from accessing the cookie
@@ -77,8 +77,6 @@ const adminlogin = asyncHandler(async (req, res) => {
         status: 'Success',
         _id: user?._id,
         message: 'Login success',
-        username: user?.username,
-        email: user?.email,
     });
 });
 
@@ -120,5 +118,6 @@ const registerStudent = asyncHandler(async (req, res) => {
 
 module.exports = {
     adminRegister,
-    adminlogin
+    adminlogin,
+    registerStudent
 }
