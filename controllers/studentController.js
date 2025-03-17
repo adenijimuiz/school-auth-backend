@@ -18,9 +18,9 @@ const studentLogin = asyncHandler(async (req, res) => {
         throw new Error("Invalid email or password");
     }
 
-    const token = jwt.sign({id: student?._id}, process.env.JWT_SECRET, {expiresIn: '3d'});
+    const studenttoken = jwt.sign({id: student?._id, role: 'student'}, process.env.JWT_SECRET, {expiresIn: '3d'});
 
-    res.cookie('token', token, {
+    res.cookie('token', studenttoken, {
         httpOnly: true,
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000,
