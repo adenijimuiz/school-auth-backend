@@ -9,7 +9,7 @@ adminRouter.post('/register', adminRegister);
 adminRouter.post('/login', adminlogin);
 adminRouter.post('/registerStudent', isAuthenticated, registerStudent);
 adminRouter.post('/logout', logout);
-// adminRouter.get('/profile', adminProfile);
+adminRouter.post('/profile', adminProfile);
 
 
 module.exports = adminRouter;

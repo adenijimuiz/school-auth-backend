@@ -36,6 +36,37 @@ const studentLogin = asyncHandler(async (req, res) => {
     });
 })
 
+const changePassword = asyncHandler(async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+
+    //validate
+    if(!currentPassword || !newPassword){
+        res.status(400);
+        throw new Error("Both current and new passwords are required");
+    }
+
+    const student = await Student.findById(req.user.id);
+    if(!student){
+        res.status(404);
+        throw new Error("Student Not found");
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, student?.password);
+    if(!isMatch){
+        res.status(401);
+        throw new Error("current password is incorrect");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    student.password = await bcrypt.hash(newPassword, salt);
+
+    await student.save();
+
+    res.json({ message: "Password updated successfully" });
+})
+
+
 module.exports = {
-    studentLogin
+    studentLogin,
+    changePassword
 }
