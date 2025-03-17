@@ -3,6 +3,7 @@ const connectDB = require('./utils/connectDB');
 const adminRouter = require('./routes/adminsRouters');
 const { errorHandler } = require('./middlewares/errorHandler');
 const cookieParser = require('cookie-parser');
+const studentRouter = require('./routes/studentRouters');
 
 require('dotenv').config();
 
@@ -16,6 +17,7 @@ connectDB();
 
 //routes
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/student', studentRouter)
 
 
 //middleware
