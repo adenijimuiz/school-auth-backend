@@ -158,6 +158,61 @@ const getStudentById = asyncHandler(async (req, res) => {
     res.status(200).json({ status: 'success', student });
 });
 
+//updateStudent
+const updateStudent = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+        res.status(404);
+        throw new Error('Student not found');
+    }
+
+    student.username = req.body.username || student.username;
+    student.email = req.body.email || student.email;
+
+    await student.save();
+    res.status(200).json({ status: 'success', message: 'Student updated successfully', student });
+});
+
+//deleteStudent
+const deleteStudent = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+        res.status(404);
+        throw new Error('Student not found');
+    }
+    await student.deleteOne();
+    res.status(200).json({ status: 'success', message: 'Student deleted successfully' });
+});
+
+//adminChangePassword
+const adminChangePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        res.status(400);
+        throw new Error('Both current and new passwords are required');
+    }
+
+    const admin = await Admin.findById(req.user.id);
+    if (!admin) {
+        res.status(404);
+        throw new Error('Admin not found');
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+        res.status(401);
+        throw new Error('Current password is incorrect');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    admin.password = await bcrypt.hash(newPassword, salt);
+
+    await admin.save();
+    res.status(200).json({ message: 'Password updated successfully' });
+});
+
+
 module.exports = {
     adminRegister,
     adminlogin,
@@ -165,5 +220,8 @@ module.exports = {
     logout,
     adminProfile,
     getAllStudents,
-    getStudentById
+    getStudentById,
+    updateStudent,
+    deleteStudent,
+    adminChangePassword
 }
