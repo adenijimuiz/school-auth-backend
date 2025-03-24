@@ -81,6 +81,7 @@ const adminlogin = asyncHandler(async (req, res) => {
     });
 });
 
+//register Student
 const registerStudent = asyncHandler(async (req, res) => {
     const {username, email, password} = req.body;
 
@@ -98,7 +99,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         username,
         email,
         password: hashPassword,
-        role: 'student',
+        adminId: req.user.id
     })
 
     await studentUser.save();
@@ -109,7 +110,8 @@ const registerStudent = asyncHandler(async (req, res) => {
         user: {
             username,
             email
-        }
+        },
+        createdBy: req.user.id
     });
 });
 
@@ -127,7 +129,7 @@ const logout = asyncHandler(async (req, res) => {
 
 //profile
 const adminProfile = asyncHandler(async (req, res) => {
-    const admin = await Admin.findById(req?.admin?.id).select('-password');
+    const admin = await Admin.findById(req.user.id).select('-password');
 
     if(admin){
         res.status(200).json({
@@ -140,13 +142,28 @@ const adminProfile = asyncHandler(async (req, res) => {
     }
 });
 
+//getAllStudents
+const getAllStudents = asyncHandler(async (req, res) => {
+    const students = await Student.find().select('-password');
+    res.status(200).json({ status: 'success', students });
+});
 
-
+//getStudentById
+const getStudentById = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.params.id).select('-password');
+    if (!student) {
+        res.status(404);
+        throw new Error('Student not found');
+    }
+    res.status(200).json({ status: 'success', student });
+});
 
 module.exports = {
     adminRegister,
     adminlogin,
     registerStudent,
     logout,
-    adminProfile
+    adminProfile,
+    getAllStudents,
+    getStudentById
 }
